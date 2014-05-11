@@ -98,7 +98,7 @@ public class MainGui extends JFrame{
 	
 	public static void chooseBiggestFile(){
 		 
-		  String path = "D:/rfactor/aliga2014/UserData/LOG/rf_TotalControl"; 
+		  String path = "UserData/LOG/rf_TotalControl"; 
 		 
 		  File folder = new File(path);
 		  File[] listOfFiles = folder.listFiles(); 
