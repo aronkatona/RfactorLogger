@@ -5,7 +5,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Date;
 import java.util.Properties;
 
@@ -26,6 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -42,6 +51,9 @@ public class MainGui extends JFrame{
 	public JLabel nameLabel ;
 	public JTextField nameField;
 	public JFileChooser pathChooser;
+	public boolean firstRun;
+	public BufferedReader fileReader;
+	public String userName;
 	
 	public MainGui(){
 		setSize(400,400);
@@ -50,17 +62,43 @@ public class MainGui extends JFrame{
 		setResizable(false);
 		setLayout(new BorderLayout());
 		
+		try {
+			fileReader = new BufferedReader(new FileReader("properties773.txt"));
+			try {
+				userName = fileReader.readLine();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Irj a katonaron@gmail-com címre ezzel a számmal: " + "1");
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("not");
+			userName =  JOptionPane.showInputDialog(
+	        		this,
+	                "Add meg a neved",
+	                "Névválasztás",
+	                JOptionPane.PLAIN_MESSAGE);;
+			Writer writer = null;
+
+			try {
+			    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("properties773.txt"), "utf-8"));
+			    writer.write(userName);
+			} catch (IOException ex) {
+				JOptionPane.showMessageDialog(null, "Irj a katonaron@gmail.com címre ezzel a  számmal: " + "2");
+			} finally {
+			   try {writer.close();} catch (Exception ex) {}
+			}
+		}
+	
 		nameLabel = new JLabel();
 		nameLabel.setFont(new Font("Serif", Font.BOLD, 50));
-		nameLabel.setText("Név");
+		nameLabel.setText("Üdv " + userName);
 		nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		nameLabel.setPreferredSize(new Dimension(400, 200));
+		nameLabel.setPreferredSize(new Dimension(400, 300));
 		add(nameLabel,BorderLayout.PAGE_START);
 		
-		nameField = new JTextField();
+		/*nameField = new JTextField();
 		nameField.setEditable(true);
-		nameField.setPreferredSize(new Dimension(400, 100));
-		add(nameField,BorderLayout.CENTER);
+		nameField.setPreferredSize(new Dimension(400, 300));
+		add(nameField,BorderLayout.CENTER);*/
 		
 		/*pathChooser = new JFileChooser(); 
 		pathChooser.setCurrentDirectory(new java.io.File("."));
@@ -85,7 +123,14 @@ public class MainGui extends JFrame{
 				
 				chooseBiggestFile();
 				System.out.println(haveToSend);
-				if(haveToSend) 	sendEmail(pathOfFile,nameField.getText());
+				if(haveToSend) 	{
+					sendEmail(pathOfFile,userName);
+					JOptionPane.showMessageDialog(null, "Elküldve");
+				} 
+				else{
+					JOptionPane.showMessageDialog(null, "Nincs mit küldeni, de ha úgy gondolod lenne, akkor " +
+							"írj a katonaron@gmail.com címre ezzel a  számmal: " + "4");
+				}
 
 				
 			}
@@ -163,10 +208,11 @@ public class MainGui extends JFrame{
 	        message.setContent(multipart);
 
 	        Transport.send(message);
+	        
 
 
 	    } catch (MessagingException e) {
-	        e.printStackTrace();
+	    	JOptionPane.showMessageDialog(null, "Irj a katonaron@gmail-com címre ezzela  számmal: " + "3");
 	    }
 	}
 
