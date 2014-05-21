@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -61,6 +63,44 @@ public class MainGui extends JFrame{
 		setTitle("A-liga");
 		setResizable(false);
 		setLayout(new BorderLayout());
+		
+		addWindowListener(new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent we)
+            {
+                int result = rlyClose();
+                if (result == JOptionPane.YES_OPTION)       {
+                	try {
+						Runtime.getRuntime().exec("taskkill /F /IM rF_TotalControl.exe");
+						Runtime.getRuntime().exec("taskkill /F /IM explorer.exe");
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						Runtime.getRuntime().exec("cmd.exe /c start /min c:\\Windows\\explorer.exe");
+						
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                }                  
+                else if (result == JOptionPane.NO_OPTION)  
+                    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            }
+        });
+		
+		 
+		 try {
+			 String command = "cmd.exe /c start /min hider.exe "; 
+			 //String command = "cmd.exe /c start /min chrome.exe";
+			 Process p=Runtime.getRuntime().exec(command);
+		 } catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		try {
 			fileReader = new BufferedReader(new FileReader("properties773.txt"));
@@ -121,24 +161,42 @@ public class MainGui extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				chooseBiggestFile();
+				//chooseBiggestFile();
 				System.out.println(haveToSend);
 				if(haveToSend) 	{
-					sendEmail(pathOfFile,userName);
+					//sendEmail(pathOfFile,userName);
 					JOptionPane.showMessageDialog(null, "Elküldve");
 				} 
 				else{
 					JOptionPane.showMessageDialog(null, "Nincs mit küldeni, de ha úgy gondolod lenne, akkor " +
 							"írj a katonaron@gmail.com címre ezzel a  számmal: " + "4");
 				}
-
 				
+				try {
+					Runtime.getRuntime().exec("taskkill /F /IM rF_TotalControl.exe");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		
 			}
 		});
 		btn.setPreferredSize(new Dimension(400, 100));
 		add(btn,BorderLayout.PAGE_END);
 		
 		setLocationRelativeTo(null);
+	}
+	
+	public int rlyClose(){
+		int result = JOptionPane.showOptionDialog(null, 
+		        "Végeztél?", 
+		        "Kilépés", 
+		        JOptionPane.OK_CANCEL_OPTION, 
+		        JOptionPane.INFORMATION_MESSAGE, 
+		        null, 
+		        new String[]{"Igen", "Nem"}, // this is the array
+		        "default");
+		return result;
 	}
 	
 	public static void chooseBiggestFile(){
@@ -215,6 +273,7 @@ public class MainGui extends JFrame{
 	    	JOptionPane.showMessageDialog(null, "Irj a katonaron@gmail-com címre ezzela  számmal: " + "3");
 	    }
 	}
+	
 
 	public static void main(String[] args) {
 		
